@@ -1,4 +1,4 @@
-import { test, expect, slowExpect } from '../fixtures/fixtures'
+import { test, slowExpect } from '../fixtures/fixtures'
 
 class Login {
     constructor (page) {
