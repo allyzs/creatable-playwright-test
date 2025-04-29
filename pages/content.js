@@ -5,6 +5,7 @@ class Content {
         this.page = page
         this.pageTitle = '//h1'
         this.searchFld = '//input[@placeholder="Search"]'
+        this.closeBtn = '//button/*[@data-testid="CloseIcon"]'
         //Content Card Elements
         this.contentCard = '//*[contains(@data-testid,"content")]'
         this.matchedProductTag = '//button/*[@data-testid="LocalOfferIcon"]/following-sibling::p'
@@ -15,9 +16,14 @@ class Content {
         this.statusDetail = '//*[contains(@class,"css-1pjtbja")]'
         // this.descriptionDetail = '//*[contains(@class,"css-ut0bns")]' - it is not description
 
+        this.noContentMsg = '//*[text()="You have no content to display."]'
+
         this.createContentBtn = '//button[@aria-label="Content creation"]'
         this.createVideBtn = '//button[@aria-label="Video"]'
         this.createPhotoBtn = '//button[@aria-label="Photo"]'
+
+        this.newVideoDialog = '//*[text()="Video upload"]'
+        this.newPhotoDialog = '//*[text()="New photo post"]'
     }
 
     async validateThatURLIsCorrect() {
@@ -120,6 +126,73 @@ class Content {
     async validateThatEachContentCardDisplaysCorrectDetails(items) {
         await this.validateThatEachContentCardHasAllNecessaryDetailsDisplayed()
         await this.validateTheContentCardDetails(items)
+    }
+
+    async enterSearchField(search) {
+        await test.step(`Enter Search Keyword - ${search}`, async () => {
+            await this.page.locator(this.searchFld).fill(search)
+            await this.getContentList()
+        })
+    }
+
+    async validateThatContentCardThatMatchesSearchIsDisplayed(search) {
+        await test.step('Validate that displayed Content Card is correct based on search result', async () => {
+            const displayedCardDetails = await this.getDetailsOfDisplayedContentCards()
+            for(let x = 0; x < displayedCardDetails.length; x++){
+                slowExpect(displayedCardDetails[x].title.toLowerCase()).toContain(search.toLowerCase())
+            }
+        })
+    }
+
+    async clearSearchField() {
+        await test.step('Clear Search field', async () => {
+            await this.page.locator(this.closeBtn).click()
+        })
+    }
+
+    async validateSeachFieldIsCleared() {
+        await test.step('Validate Search Field is cleared', async () => {
+            await slowExpect(await this.page.locator(this.searchFld)).toHaveValue("")
+        })
+    }
+
+    async validateNoContentCardToDisplayeMsgIsDisplayed() {
+        await test.step('Verify that No Content Card to Display message is visible', async () => {
+            await slowExpect(await this.page.locator(this.noContentMsg)).toBeVisible()
+        })
+    }
+
+    async clickContentCard() {
+        await test.step('Open a content card', async () => {
+            await this.page.locator(this.contentCard).first().click()
+        })
+    }
+
+    async validateThatDetailsPageIsDisplayed() {
+        await test.step('Validate that Details page is opened', async () => {
+            await slowExpect(this.page).toHaveURL(/details/)
+        })  
+    }
+
+    async clickCreateNewPost(type) {
+        await this.page.locator(this.createContentBtn).hover()
+        type === 'Photo'
+            ? await this.page.locator(this.createPhotoBtn).click()
+            : await this.page.locator(this.createVideBtn).click()
+    }
+
+    async closeDialog() {
+        await test.step('Click Close button', async () => {
+            await this.page.locator(this.closeBtn).click()
+        })
+    }
+
+    async validateThatDialogForNewPostIsDisplayed(type) {
+        await test.step(`Validate that dialog for new ${type} is displayed`, async () => {
+            type === 'Photo'
+            ? await slowExpect(await this.page.locator(this.newPhotoDialog)).toBeVisible()
+            : await slowExpect(await this.page.locator(this.newVideoDialog)).toBeVisible()
+        })
     }
 }
 
