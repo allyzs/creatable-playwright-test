@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test'
-import { Login, Navigation } from '../pages'
+import { Login, Navigation, Content } from '../pages'
 
 export const test = base.extend({
     login: async ({ page }, use) => {
@@ -7,6 +7,9 @@ export const test = base.extend({
 	},
     navigation: async ({page}, use)=> {
         await use(new Navigation(page))
+    },
+    content: async ({page}, use)=> {
+        await use(new Content(page))
     }
 })
 
