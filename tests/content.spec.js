@@ -47,5 +47,4 @@ test.describe('Contents - Menu Page', () => {
             await content.closeDialog()
         }
     })
-
 })
