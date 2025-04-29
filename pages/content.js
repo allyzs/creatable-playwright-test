@@ -175,10 +175,12 @@ class Content {
     }
 
     async clickCreateNewPost(type) {
-        await this.page.locator(this.createContentBtn).hover()
-        type === 'Photo'
-            ? await this.page.locator(this.createPhotoBtn).click()
-            : await this.page.locator(this.createVideBtn).click()
+        await test.step(`Click Create New Content - ${type} button`, async () => {
+            await this.page.locator(this.createContentBtn).hover()
+            type === 'Photo'
+                ? await this.page.locator(this.createPhotoBtn).click()
+                : await this.page.locator(this.createVideBtn).click()
+        })  
     }
 
     async closeDialog() {
